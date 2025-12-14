@@ -1,0 +1,16 @@
+FROM jupyterhub/jupyterhub:latest
+
+RUN apt update 
+RUN apt -y install python3-dev
+RUN apt -y install git
+RUN apt -y install vim
+RUN apt -y install nano
+RUN apt -y install build-essential
+RUN apt -y install curl
+RUN apt -y install wget
+
+WORKDIR jupyter
+
+VOLUME /jupyter/data
+
+ENTRYPOINT jupyterhub --log-level=DEBUG
