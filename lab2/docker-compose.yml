@@ -1,0 +1,70 @@
+services:
+  init:
+    image: alpine:3.20
+    container_name: ${INIT_CONTAINER_NAME}
+    command: >
+      sh -c "echo 'init done' > /data/READY && chown 1001:1001 /data/READY"
+    volumes:
+      - app-data:/data
+    restart: "no"
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD", "test", "-f", "/data/READY"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${APP_IMAGE}
+    container_name: ${APP_CONTAINER_NAME}
+    depends_on:
+      - init
+      - cache
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:8000"
+    volumes:
+      - app-data:/app/data
+    command: ["--ip=0.0.0.0", "--port=8000"]
+    networks:
+      - appnet
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/hub/health')",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  cache:
+    image: redis:7.2-alpine
+    container_name: ${CACHE_CONTAINER_NAME}
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  app-data:
+
+networks:
+  appnet:
+    name: ${NETWORK_NAME}
+
