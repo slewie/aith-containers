@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jupyterhub-configmap
+  labels:
+    app: jupyterhub
+    tier: frontend
+    environment: development
+data:
+  JUPYTERHUB_PORT: "8000"
+  JUPYTERHUB_HOST: "0.0.0.0"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  LOG_LEVEL: "DEBUG"
+  DATA_DIR: "/app/data"
+

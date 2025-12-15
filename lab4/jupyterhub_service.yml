@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyterhub-service
+  labels:
+    app: jupyterhub
+    tier: frontend
+    environment: development
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30800
+      name: http
+  selector:
+    app: jupyterhub
+

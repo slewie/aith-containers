@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-configmap
+  labels:
+    app: redis
+    tier: cache
+    environment: development
+data:
+  REDIS_PORT: "6379"
+  REDIS_MAXMEMORY: "128mb"
+
